@@ -1,0 +1,12 @@
+model FreeeToken {
+  userId       String   @id
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  companyId    Int?
+  scope        String?
+  tokenType    String?
+  revision     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

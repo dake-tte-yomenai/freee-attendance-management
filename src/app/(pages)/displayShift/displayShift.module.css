@@ -1,0 +1,121 @@
+.wrap {
+  margin: 0 auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #222;
+  background: #fff;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.navBtn {
+  border: 1px solid #ddd;
+  background: #fafafa;
+  border-radius: 8px;
+  height: 36px;
+  width: 36px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.navBtn:hover { background: #f0f0f0; }
+
+.controlRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0 14px;
+}
+
+.todayBtn {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.todayBtn:hover { background: #f7f7f7; }
+
+.monthInput {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+/* 曜日ヘッダ */
+.weekday {
+  text-align: center;
+  font-weight: 700;
+  padding: 8px 0;
+  border-bottom: 2px solid #e6e6e6;
+  background: #fcfcfc;
+}
+.sun { color: #d33; }
+.sat { color: #247; }
+
+/* 日付セル（紙カレンダー風：広め・角丸・薄い枠） */
+.cell {
+  min-height: 200px;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 8px;
+  position: relative;
+  background: #fff;
+}
+.dim {
+  opacity: 0.45; /* 前後月を淡く */
+}
+
+/* 日付バッジ（右上）。今日なら薄い丸で囲む */
+.dateBadge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.today {
+  padding: 2px 6px;
+  border: 2px solid #3b82f6; /* ブルー系の丸印 */
+  border-radius: 999px;
+}
+
+/* 日曜は赤、土曜は青（数字や内容に反映） */
+.sunTxt { color: #c62828; }
+.satTxt { color: #1565c0; }
+
+/* イベント行の例（必要なら） */
+.event {
+  margin-top: 28px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.shiftTime {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,143 @@
+.wrap {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  gap: 8px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+.timeHeader {
+  display: grid;
+  grid-template-columns: var(--gutterWidth) 1fr;
+  align-items: end;
+}
+
+.gutter {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  height: 100%;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.timeScale {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--hourWidth);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background:
+    /* 15分刻み */
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(var(--hourWidth) / 4 - 1px),
+      #e9e9e9 calc(var(--hourWidth) / 4 - 1px),
+      #e9e9e9 calc(var(--hourWidth) / 4)
+    );
+}
+
+.tick {
+  position: relative;
+  height: 100%;
+  border-right: 1px solid #d6d6d6; /* 1時間ごと */
+}
+
+.tickLabel {
+  position: absolute;
+  bottom: -2px;
+  right: 4px;
+  font-size: 12px;
+  color: #444;
+}
+
+.boardRow {
+  display: grid;
+  grid-template-columns: var(--gutterWidth) 1fr;
+  gap: 8px;
+}
+
+.board {
+  position: relative;
+  height: var(--boardHeight);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.gridBg {
+  position: absolute;
+  inset: 0;
+  background:
+    /* 縦：1時間 */
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(var(--hourWidth) - 1px),
+      #eee calc(var(--hourWidth) - 1px),
+      #eee var(--hourWidth)
+    ),
+    /* 横：レーン */
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc((var(--boardHeight) / var(--laneCount)) - 1px),
+      #f0f0f0 calc((var(--boardHeight) / var(--laneCount)) - 1px),
+      #f0f0f0 calc(var(--boardHeight) / var(--laneCount))
+    );
+}
+
+.laneLabel {
+  height: calc(var(--boardHeight) / var(--laneCount));
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 12px;
+  color: #555;
+}
+
+/* 表示専用バー（ドラッグなし） */
+.bandStatic {
+  position: absolute;
+  border-radius: 10px;
+  border: 1px solid #b6d4fe;
+  background: rgba(99, 142, 255, 0.18);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  user-select: none;
+}
+
+.bandLabel {
+  font-size: 12px;
+  color: #2b3d6b;
+  pointer-events: none;
+}
+
+.workBand {
+  position: absolute;
+  border-radius: 10px;
+  border: 1px solid #4a67ff;
+  background: rgba(74, 103, 255, 0.18);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.breakBand {
+  position: absolute;
+  border-radius: 8px;
+  border: 1px dashed #ffa500;
+  background: rgba(255, 165, 0, 0.22);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.breakLabel, .bandLabel {
+  font-size: 12px;
+  color: #2b3d6b;
+  pointer-events: none;
+}
