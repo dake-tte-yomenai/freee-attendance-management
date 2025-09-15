@@ -1,7 +1,7 @@
 // app/api/freee/exchange/route.js
 import 'server-only';
 // ルートから (server) へは 3 つ上に戻る: /app/api/freee/exchange → /app
-import { seedTokens } from '../../../(server)/freeeTokenApi';
+import { seedTokens } from '../../../(server)/freeeToken';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
