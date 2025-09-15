@@ -1,6 +1,6 @@
 export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
-import { refreshOncePerBurst } from '../../../server/freee/refreshGate.js';
+import { getAccessToken } from "../../(server)/getAccessToken.js";
 
 export async function POST(req){
     const {searchParams}=new URL(req.url);
@@ -8,7 +8,7 @@ export async function POST(req){
     
     const { type,base_date, datetime } = await req.json();
 
-    const at = await refreshOncePerBurst();
+    const at = await getAccessToken();
 
     const url=`https://api.freee.co.jp/hr/api/v1/employees/${employee_id}/time_clocks`;
 

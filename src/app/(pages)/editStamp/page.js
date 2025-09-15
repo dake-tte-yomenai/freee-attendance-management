@@ -1,12 +1,26 @@
 "use client";
 import { useMemo,useState } from "react";
-import { useSearchParams } from "next/navigation"
+import { useSearchParams,useRouter } from "next/navigation"
 import { changeNotationTime } from "../../utils/changeNotationTime/changeNotationTime";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 export default function EditStamp(){
     const sp=useSearchParams();
-    const id=sp.get("id");
+    const [id,setId]=useState(sp.get('id'));
     const data=sp.get("data");
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+        if (!u) {
+            router.replace("/");
+            return;
+        }
+        setId(emailToId(u.email));
+        });
+        return () => unsub();
+    }, [router]);
 
     const row = useMemo(() => {
         try {

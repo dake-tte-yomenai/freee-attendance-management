@@ -1,14 +1,18 @@
 "use client";
 import { useState,useEffect,useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams,useRouter } from "next/navigation";
 import styles from "./stamping.module.css";
 import { toISO8601WithOffset } from "../../utils/toISO8601WithOffset/toISO8601WithOffset";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 export default function DetailPage(){
-    const searchParams=useSearchParams();
-    const id=searchParams.get("id");
+    const params=useSearchParams();
+    const [id,setId]=useState(params.get('id'));
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(true);
+    const router=useRouter();
 
     const [open,setOpen]=useState(false);
     const [selectedType, setSelectedType] = useState(null);
@@ -17,6 +21,17 @@ export default function DetailPage(){
     const [timeStr, setTimeStr] = useState(""); // "HH:mm"
     const [submitting, setSubmitting] = useState(false);
     const [msg, setMsg] = useState(null);
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+        if (!u) {
+            router.replace("/");
+            return;
+        }
+        setId(emailToId(u.email));
+        });
+        return () => unsub();
+    }, [router]);
 
     useEffect(() => {
         const now = new Date();

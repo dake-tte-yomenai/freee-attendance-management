@@ -28,8 +28,9 @@ export async function POST(req) {
       end_break: toHHMMSS(br.end),
     })),
   };
+   const base = process.env.BACKEND_BASE_URL;
 
-  const r = await fetch("http://127.0.0.1:8000/postShifts", {
+  const r = await fetch(`${base}/postShifts`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

@@ -1,6 +1,6 @@
 export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
-import { refreshOncePerBurst } from '../../../server/freee/refreshGate.js';
+import { getAccessToken } from "../../(server)/getAccessToken.js";
 
 export async function PUT(req) {
   const { searchParams } = new URL(req.url);
@@ -29,7 +29,7 @@ export async function PUT(req) {
 
   const url = `https://api.freee.co.jp/hr/api/v1/employees/${employee_id}/work_records/${date}`;
 
-  const at = await refreshOncePerBurst();
+  const at = await getAccessToken();
 
   try {
     const res = await fetch(url, {
