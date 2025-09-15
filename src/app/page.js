@@ -40,6 +40,7 @@ export default function LoginForm(){
         <button type="submit">ログイン</button>
         {err && <p>{err}</p>}
       </form>
+      <button onClick={()=>{router.push("./signup")}}>サインアップはこちら</button>
     </div>
   )
 }

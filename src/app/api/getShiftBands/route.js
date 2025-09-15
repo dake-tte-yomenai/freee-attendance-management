@@ -11,7 +11,7 @@ export async function GET(req) {
     return NextResponse.json({ error: 'year/month/day is required' }, { status: 400 });
   }
 
-  const base = process.env.NEXT_PUBLIC_SHIFT_API_BASE || 'http://localhost:8000';
+  const base = process.env.BACKEND_BASE_URL;
   const url  = `${base}/getDetailShifts?year=${year}&month=${month}&day=${day}`;
 
   const r = await fetch(url, { method: 'GET' });

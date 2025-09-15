@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic"; // 静的化させない
 export const runtime = 'nodejs';
-import { refreshOncePerBurst } from '../../../server/freee/refreshGate.js';
+import { getAccessToken } from "../../(server)/getAccessToken.js";
 
 export async function GET(req){
     const { searchParams } = new URL(req.url);
@@ -9,7 +9,7 @@ export async function GET(req){
     const year = searchParams.get("year");
     const month= searchParams.get("month");
 
-    const at=await refreshOncePerBurst();
+    const at = await getAccessToken();
 
     if (!employeeId || !year || !month) {
         return NextResponse.json({ message: "employeeId と year,month は必須です" }, { status: 400 });

@@ -1,10 +1,10 @@
 export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
-import { refreshOncePerBurst } from '../../../server/freee/refreshGate.js';
+import { getAccessToken } from "../../(server)/getAccessToken.js";
 
 export async function GET(){
     try {
-        const at = await refreshOncePerBurst();
+        const at = await getAccessToken();
         const url = `https://api.freee.co.jp/hr/api/v1/companies/${process.env.COMPANY_ID}/employees?limit=50&with_no_payroll_calculation=true`;
         const res = await fetch(url, {
             headers: {

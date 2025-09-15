@@ -11,7 +11,7 @@ export async function GET(req) {
     return NextResponse.json({ error: 'id/year/month is required' }, { status: 400 });
   }
 
-  const base = process.env.NEXT_PUBLIC_SHIFT_API_BASE || 'http://localhost:8000';
+  const base =process.env.BACKEND_BASE_URL;
   const r = await fetch(`${base}/getWorkMonth?id=${encodeURIComponent(id)}&year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`, {
     method: 'GET',
   });

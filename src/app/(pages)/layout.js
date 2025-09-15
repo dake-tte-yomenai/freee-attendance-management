@@ -24,19 +24,17 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <html lang="ja">
-      <body>
-        <header className={styles.header}>
-          <div className={styles.left}></div>
-          <div className={styles.right}>
-            <p onClick={toStamp}>打刻</p>
-            <p onClick={toStampHistory}>打刻履歴</p>
-            <p onClick={toDisplayShift}>シフト表</p>
-            <p onClick={toDisplaySalary}>給料一覧</p>
-          </div>
-        </header>
-        {children}
-      </body>
-    </html>
+   <>
+    <header className={styles.header}>
+      <div className={styles.left}></div>
+      <div className={styles.right}>
+        <p onClick={toStamp}>打刻</p>
+        <p onClick={toStampHistory}>打刻履歴</p>
+        <p onClick={toDisplayShift}>シフト表</p>
+        <p onClick={toDisplaySalary}>給料一覧</p>
+      </div>
+    </header>
+    {children}
+   </>
   );
 }

@@ -1,15 +1,31 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams,useRouter } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import ShiftBandFrame from '../../components/ShiftBandFrame';
 import styles from './detailShift.module.css';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 export default function DetailShift() {
+  const router = useRouter();
   const params = useSearchParams();
-  const id = params.get('id');
   const year = params.get('year');
   const month = params.get('month');
   const day = params.get('day');
+
+  const [id,setId]=useState(params.get('id'));
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        router.replace("/");
+        return;
+      }
+      setId(emailToId(u.email));
+    });
+    return () => unsub();
+  }, [router]);
 
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');

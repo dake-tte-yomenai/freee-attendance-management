@@ -3,6 +3,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./displayShift.module.css";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
 function endOfMonth(d)   { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
@@ -24,9 +27,20 @@ export default function DisplayShift() {
   const router = useRouter();
   const params = useSearchParams();
 
-  const id = params.get("id");
+  const [id,setId]=useState(params.get('id'));
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        router.replace("/");
+        return;
+      }
+      setId(emailToId(u.email));
+    });
+    return () => unsub();
+  }, [router]);
 
   // 6週×7列=35マス（週開始は日曜）
   const cells = useMemo(() => {

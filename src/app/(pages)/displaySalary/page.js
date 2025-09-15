@@ -1,6 +1,9 @@
 "use client";
 import { useState,useMemo,useEffect,useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams,useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 export default function DisplaySalary(){
     const thisYear = useMemo(() => new Date().getFullYear(), []);
@@ -13,7 +16,20 @@ export default function DisplaySalary(){
     const [data, setData]=useState(null); 
     
     const params=useSearchParams();
-    const id=params.get("id");
+    const [id,setId]=useState(params.get('id'));
+
+    const router = useRouter();
+
+     useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+        if (!u) {
+            router.replace("/");
+            return;
+        }
+        setId(emailToId(u.email));
+        });
+        return () => unsub();
+    }, [router]);
 
     const load=async(y,m)=>{
         setLoading(true);

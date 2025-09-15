@@ -2,5 +2,6 @@
 import DisplayShift from './DisplayShift';
 
 export default function Page() {
+  
   return <DisplayShift />;
 }

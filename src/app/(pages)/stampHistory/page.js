@@ -3,10 +3,13 @@ import { useState,useMemo,useRef,useEffect } from "react";
 import { useSearchParams,useRouter } from "next/navigation"; 
 import styles from "./stampHistory.module.css";
 import { toRows } from "../../utils/toRows/toRows"; 
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { emailToId } from "../../utils/idToEmail/idToEmail";
 
 export default function StampHistory(){
-    const searchParams=useSearchParams();
-    const id=searchParams.get("id");
+    const params=useSearchParams();
+    const [id,setId]=useState(params.get('id'));
 
     const router=useRouter();
     //1
@@ -19,6 +22,17 @@ export default function StampHistory(){
     const [rows,setRows]=useState([]);
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState(null);
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+        if (!u) {
+            router.replace("/");
+            return;
+        }
+        setId(emailToId(u.email));
+        });
+        return () => unsub();
+    }, [router]);
 
     const load=async(y,m)=>{
         setLoading(true);
@@ -58,6 +72,10 @@ export default function StampHistory(){
         router.push(`/editStamp?${params.toString()}`); 
     }
 
+    const toLiffBind=()=>{
+        router.push("/liff/bind");
+    }
+
     return(
         <div>
             <h1>打刻履歴</h1>
@@ -74,6 +92,8 @@ export default function StampHistory(){
                 />
                 <button type="submit">表示</button>
             </form>
+            <br/>
+            <button onClick={toLiffBind}>LINE連携</button>
             {loading && <p>読み込み中...</p>}
             {err && <p>{err}</p>}
             {rows.length > 0 && (
