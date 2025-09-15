@@ -1,9 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/scheduler/clockout-reminder-batch?key=<CRON_SECRET>&after=5&len=10",
-      "schedule": "*/1 * * * *",
-      "timezone": "Asia/Tokyo"
-    }
-  ]
-}
