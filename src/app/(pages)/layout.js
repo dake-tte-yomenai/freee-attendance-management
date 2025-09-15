@@ -1,40 +1,20 @@
-"use client";
-import { useSearchParams,useRouter } from "next/navigation";
-import styles from "./layout.module.css"
+// app/(pages)/layout.jsx  ← サーバー（"use client" なし）
+import { Suspense } from "react";
+import styles from "./layout.module.css";
+import HeaderClient from "./HeaderClient";
+
+export const dynamic = "force-dynamic"; // セグメント全体を動的化（SSG回避）
 
 export default function RootLayout({ children }) {
-  const router=useRouter();
-  const params = useSearchParams();
-  const id=params.get("id");
-  
-  const toStamp=()=>{
-    router.push(`./stamping?id=${encodeURIComponent(id)}`)
-  }
-
-  const toStampHistory=()=>{
-    router.push(`./stampHistory?id=${encodeURIComponent(id)}`)
-  }
-
-  const toDisplaySalary=()=>{
-    router.push(`./displaySalary?id=${encodeURIComponent(id)}`)
-  }
-
-  const toDisplayShift=()=>{
-    router.push(`./displayShift?id=${encodeURIComponent(id)}`)
-  }
-
   return (
-   <>
-    <header className={styles.header}>
-      <div className={styles.left}></div>
-      <div className={styles.right}>
-        <p onClick={toStamp}>打刻</p>
-        <p onClick={toStampHistory}>打刻履歴</p>
-        <p onClick={toDisplayShift}>シフト表</p>
-        <p onClick={toDisplaySalary}>給料一覧</p>
-      </div>
-    </header>
-    {children}
-   </>
+    <>
+      <Suspense fallback={<header className={styles.header}><div className={styles.left}></div><div className={styles.right}>…</div></header>}>
+        <HeaderClient />
+      </Suspense>
+
+      <Suspense fallback={<p>読み込み中…</p>}>
+        {children}
+      </Suspense>
+    </>
   );
 }
