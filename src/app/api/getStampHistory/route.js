@@ -7,8 +7,13 @@ import { getAccessToken } from "../../(server)/getAccessToken.js";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const employeeId = searchParams.get("employeeId");
-  const year = searchParams.get("year");
-  const month= searchParams.get("month");
+  let year = Number(searchParams.get("year"));
+  let month= Number(searchParams.get("month"))+1;
+
+  if(month===13){
+    year=year+1;
+    month=1;
+  }
 
   const at = await getAccessToken();
 
