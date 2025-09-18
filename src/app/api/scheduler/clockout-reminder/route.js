@@ -2,26 +2,19 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-import { linePush } from '../../../../lib/line.js'; // ←既存のままでOK
+import { linePush } from '../../../../lib/line.js';
 
-// --- JSTユーティリティ（既存のを流用） ---
-const n9 = 9 * 60 * 60 * 1000;
-const toJST = (d) => new Date(d.getTime() + n9);
-const ymd = (d) => {
-  const y = d.getUTCFullYear(), m = String(d.getUTCMonth()+1).padStart(2,'0'), dd = String(d.getUTCDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
-};
-const hhmmParse = (s) => { if (!s) return null; const [H,M] = String(s).split(':'); return {h:+H||0, m:+M||0}; };
-const jstTimeOn = (dateJst, hh, mm) => new Date(Date.UTC(dateJst.getUTCFullYear(), dateJst.getUTCMonth(), dateJst.getUTCDate(), -9, 0) + (hh*60+mm)*60*1000);
+// ★ 追加：bypass トークンを読む（どちらかに入っていれば拾う）
+const BYPASS = process.env.VERCEL_AUTOMATION_BYPASS_SECRET ?? process.env.VERCEL_BYPASS_TOKEN;
 
-// --- 簡易認証 ---
+// --- JSTユーティリティ（省略） ---
+
 const okKey = (req) => {
   const u = new URL(req.url);
   const k = req.headers.get('x-cron-secret') || u.searchParams.get('key');
   return k && k === process.env.CRON_SECRET;
 };
 
-// ★ 既存の「単体処理」本体をここに引っ越し
 async function remindOne(origin, employeeId, to, after, len) {
   const now = toJST(new Date());
   const ymdStr = ymd(now);
@@ -29,7 +22,11 @@ async function remindOne(origin, employeeId, to, after, len) {
 
   // 1) 今日のシフト
   const qs1 = new URLSearchParams({ id: employeeId, year: Y, month: M }).toString();
-  const resShift = await fetch(`${origin}/api/getWorkMonth?${qs1}`, { cache: 'no-store' });
+  const resShift = await fetch(`${origin}/api/getWorkMonth?${qs1}`, {
+    cache: 'no-store',
+    // ★ 追加：各 hop ごとに毎回付ける
+    headers: BYPASS ? { 'x-vercel-protection-bypass': BYPASS } : undefined,
+  });
   const bodyShift = await resShift.text();
   if (!resShift.ok) return { employeeId, to, step:'getWorkMonth', status: resShift.status, body: bodyShift };
 
@@ -50,7 +47,11 @@ async function remindOne(origin, employeeId, to, after, len) {
 
   // 2) 勤怠サマリ
   const qs2 = new URLSearchParams({ employeeId, year: Y, month: M }).toString();
-  const resSum  = await fetch(`${origin}/api/getWorkRecordSummaries?${qs2}`, { cache: 'no-store' });
+  const resSum  = await fetch(`${origin}/api/getWorkRecordSummaries?${qs2}`, {
+    cache: 'no-store',
+    // ★ 追加：ここも
+    headers: BYPASS ? { 'x-vercel-protection-bypass': BYPASS } : undefined,
+  });
   const bodySum = await resSum.text();
   if (!resSum.ok) return { employeeId, to, step:'getWorkRecordSummaries', status: resSum.status, body: bodySum };
 
@@ -73,7 +74,6 @@ export async function POST(req){ return handle(req); }
 async function handle(req) {
   if (!okKey(req)) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
-  // 内部APIを叩くためのオリジン
   const u = new URL(req.url);
   const after = +(u.searchParams.get('after') ?? 5);
   const len   = +(u.searchParams.get('len') ?? 10);
@@ -82,7 +82,7 @@ async function handle(req) {
   const host  = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? 'localhost:3000';
   const origin = process.env.INTERNAL_BASE_URL || `${proto}://${host}`;
 
-  // 単体モード（既存の動作）
+  // 単体
   const employeeId = u.searchParams.get('employeeId');
   const to = u.searchParams.get('to');
   if (employeeId && to) {
@@ -90,26 +90,25 @@ async function handle(req) {
     return Response.json(r);
   }
 
-  // 一括モード
+  // 一括
   const backend = process.env.BACKEND_BASE_URL;
   const listRes = await fetch(`${backend}/bindings?active=true`, { cache: 'no-store' });
   if (!listRes.ok) {
     const t = await listRes.text();
     return new Response(`bindings fetch failed: ${t}`, { status: 502 });
   }
-  const list = await listRes.json(); // [{employee_id, line_user_id, ...}]
+  const list = await listRes.json();
 
   const results = [];
   for (const b of list) {
     try {
       const r = await remindOne(origin, String(b.employee_id), b.line_user_id, after, len);
       results.push(r);
-      // LINE/外部APIへの礼儀に少し間隔
       await new Promise(res => setTimeout(res, 200));
     } catch (e) {
       results.push({ employeeId: b.employee_id, error: String(e).slice(0,200) });
     }
   }
   const sent = results.filter(x => x.sent).length;
-  return Response.json({ ok:true, total: results.length, sent, results: results.slice(0, 10) }); // 先頭だけ返す
+  return Response.json({ ok:true, total: results.length, sent, results: results.slice(0, 10) });
 }
