@@ -3,8 +3,9 @@ import 'server-only';
 // ルートから (server) へは 3 つ上に戻る: /app/api/freee/exchange → /app
 import { seedTokens } from '../../../(server)/freeeToken';
 
-export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
 
 const TOKEN_URL = process.env.FREEE_TOKEN_ENDPOINT; // 例: https://accounts.secure.freee.co.jp/public_api/token
 const CLIENT_ID = process.env.FREEE_CLIENT_ID;
