@@ -1,5 +1,10 @@
-/* === Blue Theme Tokens ====================================== */
-.page{
+/* === Layout ================================================== */
+.container { 
+  padding: 16px; 
+  margin: 0 auto;
+  max-width: none;
+  color: var(--c-text);
+  background: var(--c-bg);
   --c-bg: #ffffff;
   --c-text: #111827;          /* neutral-900 */
   --c-muted: #6b7280;         /* neutral-500 */
@@ -10,15 +15,6 @@
   --c-primary-50:#eff6ff;     /* blue-50 */
   --c-danger:#ef4444;         /* red-500 */
   --ring: rgba(37,99,235,.35);
-}
-
-/* === Layout ================================================== */
-.container { 
-  padding: 16px; 
-  margin: 0 auto;
-  max-width: none;
-  color: var(--c-text);
-  background: var(--c-bg);
 }
 
 .title{ font-size:28px; font-weight:700; margin:8px 0 16px; }
