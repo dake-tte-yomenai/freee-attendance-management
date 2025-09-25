@@ -1,0 +1,76 @@
+:root{
+  --c-text:#111827;
+  --c-muted:#6b7280;
+  --c-border:#e5e7eb;
+  --c-surface:#ffffff;
+  --c-primary:#2563eb;      /* blue-600 */
+  --c-primary-700:#1d4ed8;  /* blue-700 */
+  --ring: rgba(37,99,235,.35);
+}
+
+.page{ padding:24px 0; color:var(--c-text); }
+.title{ font-size:28px; font-weight:800; margin:8px 0 14px; }
+
+/* ── ツールバー ───────────────────────── */
+.toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:12px; padding:0 12px;
+}
+.toolbarLeft{ min-width:1px; }
+.filters{ display:flex; gap:8px; align-items:center; }
+
+.month{
+  height:36px; padding:6px 10px; border-radius:10px;
+  border:1px solid var(--c-border); color:var(--c-text);
+}
+.month:focus{ outline:none; box-shadow:0 0 0 3px var(--ring); border-color:var(--c-primary); }
+
+.btnPrimary{
+  height:36px; padding:0 14px; border-radius:10px; font-weight:700;
+  background:var(--c-primary); color:#fff; border:1px solid var(--c-primary);
+}
+.btnPrimary:hover{ background:var(--c-primary-700); border-color:var(--c-primary-700); }
+
+.btnGhost{
+  height:36px; padding:0 14px; border-radius:10px; font-weight:700;
+  background:#fff; border:1px solid var(--c-border);
+}
+.btnGhost:hover{ background:#f9fafb; }
+
+/* ── スケルトン/アラート ───────────────── */
+.skel{
+  height:120px; margin:12px 12px 0; border-radius:12px;
+  background:linear-gradient(90deg,#eef2ff,#f8fafc,#eef2ff);
+  background-size:200% 100%; animation:shine 1.2s infinite;
+}
+@keyframes shine{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.alert{
+  background:#fffbeb; color:#92400e; border:1px solid #fde68a;
+  padding:10px 12px; border-radius:12px; margin:12px;
+}
+
+/* ── 結果カード ──────────────────────── */
+.card{
+  background:var(--c-surface);
+  border:1px solid var(--c-border);
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(2,6,23,.06);
+  padding:14px;
+  margin: 12px;
+}
+
+.dl{ display:grid; grid-template-columns: 160px 1fr; row-gap:10px; column-gap:12px; }
+.row{ display:contents; }
+.dl dt{ color:var(--c-muted); font-weight:700; }
+.dl dd{ margin:0; }
+.num{ font-variant-numeric: tabular-nums; }
+
+/* JSON表示（デバッグ用フォールバック） */
+.raw{
+  background:#f8fafc; padding:12px; border-radius:12px; margin:12px; overflow-x:auto;
+  border:1px solid #e5e7eb;
+}
+
+/* フッター導線 */
+.footerActions{ padding:12px; }

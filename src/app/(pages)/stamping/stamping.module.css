@@ -1,26 +1,175 @@
-.container { padding: 16px; }
-.actions { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
-.welcome { margin: 8px 0; }
-.alert { margin: 8px 0; color: #b00020; }
+/* === Blue Theme Tokens ====================================== */
+:root{
+  --c-bg: #ffffff;
+  --c-text: #111827;          /* neutral-900 */
+  --c-muted: #6b7280;         /* neutral-500 */
+  --c-border: #e5e7eb;        /* neutral-200 */
+  --c-primary: #2563eb;       /* blue-600 */
+  --c-primary-600:#2563eb;
+  --c-primary-700:#1d4ed8;    /* blue-700 */
+  --c-primary-50:#eff6ff;     /* blue-50 */
+  --c-danger:#ef4444;         /* red-500 */
+  --ring: rgba(37,99,235,.35);
+}
 
+/* === Layout ================================================== */
+.container { 
+  padding: 16px; 
+  margin: 0 auto;
+  max-width: none;
+  color: var(--c-text);
+  background: var(--c-bg);
+}
+
+.title{ font-size:28px; font-weight:700; margin:8px 0 16px; }
+
+.welcome { margin: 8px 0; color: var(--c-muted); }
+.alert { margin: 8px 0; color: var(--c-danger); }
+
+/* === Actions (blue accent) ================================== */
+.actions { 
+  display: grid; 
+  grid-template-columns: repeat(2, minmax(0,1fr)); 
+  gap: 12px; 
+  margin: 18px 0 8px; 
+}
+@media (min-width: 640px){
+  .actions { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--c-border);
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  line-height: 1.2;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 60px;
+  transition: transform .02s ease, background .2s, border-color .2s, color .2s, box-shadow .2s;
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+.btn:hover{ border-color:#cfd3d9; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn:focus-visible,
+.btnGhost:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Filled primary (青) */
+.primary {
+  background: var(--c-primary-600); 
+  color: #fff; 
+  border-color: var(--c-primary-600);
+}
+.primary:hover{ background: var(--c-primary-700); border-color: var(--c-primary-700); }
+
+/* Outline（青） */
+.btn:not(.primary):not(.danger){
+  background: #fff;
+  color: var(--c-primary-700);
+  border-color: #c7d2fe;                 /* indigo-200寄りの淡色 */
+}
+.btn:not(.primary):not(.danger):hover{
+  background: var(--c-primary-50);
+  border-color: var(--c-primary-600);
+  color: var(--c-primary-600);
+}
+
+/* 退勤＝軽い警告トーンのアウトライン */
+.danger {
+  background: #fff;
+  color: #b91c1c;
+  border-color: #fecaca;                 /* red-200 */
+}
+.danger:hover{
+  background:#fef2f2; 
+  border-color: var(--c-danger); 
+  color: var(--c-danger);
+}
+
+.btnGhost {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+/* === Modal =================================================== */
 .modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.4);
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, .35);     /* slateの薄黒 */
   z-index: 1000;
+  padding: 12px;
 }
 .modalBody {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  min-width: 280px;
+  background: #fff; 
+  padding: 18px; 
+  border-radius: 14px; 
+  min-width: 320px; max-width: 560px; width: 100%;
+  box-shadow: 0 20px 60px rgba(2,6,23,.18);
+  border: 1px solid var(--c-border);
 }
-.modalActions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 12px;
+.modalTitle { 
+  font-weight: 700; 
+  margin-bottom: 6px; 
+}
+.modalText { color: var(--c-muted); margin-bottom: 14px; }
+.modalFields { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 12px; 
+  margin-top: 2px;
+}
+.label { display: grid; gap: 6px; font-size: 14px; color: var(--c-text); }
+.label input{
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  min-height: 40px;
+  padding: 8px 10px;
+}
+.label input:focus{ outline: none; box-shadow: 0 0 0 3px var(--ring); border-color: var(--c-primary-600); }
+
+.modalActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+
+/* === Toast（青ベース） ====================================== */
+.toast {
+  position: fixed; top: 12px; right: 12px; z-index: 1100;
+}
+.toastItem {
+  background: var(--c-primary-600); 
+  color: #fff; 
+  border-radius: 12px; 
+  padding: 10px 12px; 
+  box-shadow: 0 6px 20px rgba(2,6,23,.2);
+}
+
+/* === Skeleton（青みのあるトーン） =========================== */
+.skelHeader, .skelLine, .skelBtn{
+  background: #eef2ff;                   /* indigo-50 */
+  border-radius: 10px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+.skelHeader { height: 20px; width: 40%; margin: 8px 0; }
+.skelLine { height: 16px; width: 60%; margin: 8px 0 16px; }
+.skelGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+@media (min-width:640px){ .skelGrid { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+.skelBtn { height: 44px; }
+
+@keyframes pulse {
+  0%,100% { opacity: .6; }
+  50% { opacity: 1; }
+}
+
+/* SR-only */
+.visually-hidden { 
+  position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; 
 }
