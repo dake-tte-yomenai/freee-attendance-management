@@ -273,6 +273,21 @@ export default function DetailShift() {
       {msg && <p className={styles.message}>{msg}</p>}
 
       {/* 名前クリックで編集開始 */}
+      {Number(id) === 3407708 ?
+        <div className={styles.name}>
+        {empData.map((emp, idx) => (
+          <button
+            key={emp.id}
+            onClick={() => onPickLane(idx)}
+            className={styles.nameButton}
+            style={{ background: editingLane === idx ? '#eef4ff' : '#fff' }}
+          >
+            {emp.display_name}
+          </button>
+        ))}
+      </div>
+      :null}
+
       <div className={styles.name}>
         {empData.map((emp, idx) => (
           <button
@@ -285,6 +300,7 @@ export default function DetailShift() {
           </button>
         ))}
       </div>
+      
 
       {/* 編集フォーム */}
       {editingLane != null && (
