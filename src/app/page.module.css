@@ -1,15 +1,83 @@
-.table{
-    border-collapse: collapse;
-    width: 100%;
-    margin: 20px 0;
+/* 画面用トークン（このページ配下のみ有効） */
+.page{
+  --c-text:#111827;
+  --c-muted:#6b7280;
+  --c-border:#e5e7eb;
+  --c-surface:#ffffff;
+  --c-primary:#2563eb;
+  --c-primary-700:#1d4ed8;
+  --ring:rgba(37,99,235,.35);
+
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  background:#fff;
+  padding:24px 12px;
+  color:var(--c-text);
 }
 
-.table th, .table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+/* カード */
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--c-surface);
+  border:1px solid var(--c-border);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(2,6,23,.06);
+  padding:18px;
 }
 
-.table thead th {
-  background: #f6f7f8;
-  text-align: left;
+.title{
+  font-size:24px;
+  font-weight:800;
+  margin:4px 0 12px;
 }
+
+.form{ display:grid; gap:12px; }
+
+/* フィールド */
+.field{ display:grid; gap:6px; }
+.label{ font-size:12px; font-weight:700; color:var(--c-muted); }
+.input{
+  height:44px;
+  padding:10px 12px;
+  border:1px solid var(--c-border);
+  border-radius:12px;
+  background:#fff;
+  font-variant-numeric: tabular-nums;
+}
+.input:focus{
+  outline:none;
+  border-color:var(--c-primary);
+  box-shadow:0 0 0 3px var(--ring);
+}
+
+/* アラート */
+.alert{
+  padding:10px 12px;
+  border:1px solid #fecaca;
+  background:#fef2f2;
+  color:#991b1b;
+  border-radius:12px;
+}
+
+/* ボタン */
+.actions{ display:grid; gap:8px; margin-top:4px; }
+@media (min-width:560px){
+  .actions{ grid-template-columns: 1fr 1fr; }
+}
+
+.btnPrimary{
+  height:44px; padding:0 16px; border-radius:12px; font-weight:700;
+  background:var(--c-primary); color:#fff; border:1px solid var(--c-primary);
+  cursor:pointer;
+}
+.btnPrimary:hover{ background:var(--c-primary-700); border-color:var(--c-primary-700); }
+
+.btnGhost{
+  height:44px; padding:0 16px; border-radius:12px; font-weight:700;
+  background:#fff; color:var(--c-text);
+  border:1px solid var(--c-border);
+  cursor:pointer;
+}
+.btnGhost:hover{ background:#f9fafb; }
