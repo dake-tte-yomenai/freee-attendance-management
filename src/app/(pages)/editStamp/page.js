@@ -1,7 +1,7 @@
-// app/(pages)/editStamp/page.js
 "use client";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import styles from "./editStamp.module.css";
 import { changeNotationTime } from "../../utils/changeNotationTime/changeNotationTime";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default function Page() {
   return (
-    <Suspense fallback={<p>読み込み中…</p>}>
+    <Suspense fallback={<p className={styles.pageLoading}>読み込み中…</p>}>
       <EditStampInner />
     </Suspense>
   );
@@ -36,7 +36,11 @@ function EditStampInner() {
   }, [router]);
 
   const row = useMemo(() => {
-    try { return data ? JSON.parse(data) : null; } catch { return null; }
+    try {
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
   }, [data]);
 
   const [clockIn, setClockIn] = useState(row?.clock_in ?? "");
@@ -47,7 +51,6 @@ function EditStampInner() {
   // 休憩なしトグル（初期は「両方空なら休憩なし」）
   const [noBreak, setNoBreak] = useState(!row?.break_begin && !row?.break_end);
 
-  // トグル切替時の同期
   const toggleNoBreak = (checked) => {
     setNoBreak(checked);
     if (checked) {
@@ -57,7 +60,7 @@ function EditStampInner() {
   };
 
   const toDateTimeOrNull = (hhmm) => {
-    if (!hhmm) return null; // ← ここで null を返す（--:-- 相当）
+    if (!hhmm) return null;
     return `${row.date} ${changeNotationTime(hhmm)}`;
   };
 
@@ -65,10 +68,10 @@ function EditStampInner() {
     e.preventDefault();
     if (!row?.date) return;
 
-    const newClockIn  = toDateTimeOrNull(clockIn);   // 必須はフロントでもバリデ可
-    const newClockOut = toDateTimeOrNull(clockOut);  // 必須
+    const newClockIn  = toDateTimeOrNull(clockIn);
+    const newClockOut = toDateTimeOrNull(clockOut);
 
-    // 休憩は「両方そろった時だけ値」「どちらか欠けたら両方 null」
+    // 休憩は両方そろった時だけ採用
     const hasBothBreak = !!(breakBegin && breakEnd) && !noBreak;
     const newBreakBegin = hasBothBreak ? toDateTimeOrNull(breakBegin) : null;
     const newBreakEnd   = hasBothBreak ? toDateTimeOrNull(breakEnd)   : null;
@@ -82,7 +85,6 @@ function EditStampInner() {
           body: JSON.stringify({ newClockIn, newBreakBegin, newBreakEnd, newClockOut }),
         }
       );
-
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || "更新に失敗しました。");
@@ -96,7 +98,6 @@ function EditStampInner() {
   const deleteStamp = async () => {
     try {
       const res = await fetch(
-        // 先頭スラッシュを付ける（相対 → 変なパスになる事故を防ぐ）
         `/api/deleteStamp?id=${encodeURIComponent(id)}&date=${encodeURIComponent(row.date)}`,
         { method: "DELETE" }
       );
@@ -110,63 +111,92 @@ function EditStampInner() {
     }
   };
 
-  if (!row) return <p>不正なパラメータです。</p>;
+  if (!row) return <p className={styles.pageLoading}>不正なパラメータです。</p>;
 
   return (
-    <>
-      <h1>編集画面</h1>
-      <div>{row.date} の勤怠を修正します</div>
+    <div className={styles.page}>
+      <h1 className={styles.title}>編集画面</h1>
+      <p className={styles.sub}>
+        <span className={styles.date}>{row.date}</span> の勤怠を修正します
+      </p>
 
-      <form onSubmit={editStamp}>
-        <label>
-          出勤
-          <input type="time" value={clockIn} onChange={(e) => setClockIn(e.target.value)} required />
-        </label>
-
-        <div style={{ marginTop: 8 }}>
-          <label style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
+      <form onSubmit={editStamp} className={styles.card}>
+        {/* 出勤・退勤 */}
+        <div className={styles.grid}>
+          <label className={styles.field}>
+            <span className={styles.label}>出勤</span>
             <input
-              type="checkbox"
-              checked={noBreak}
-              onChange={(e) => toggleNoBreak(e.target.checked)}
+              className={styles.input}
+              type="time"
+              value={clockIn}
+              onChange={(e) => setClockIn(e.target.value)}
+              required
             />
-            休憩なし（--:--）
+          </label>
+
+          <label className={styles.field}>
+            <span className={styles.label}>退勤</span>
+            <input
+              className={styles.input}
+              type="time"
+              value={clockOut}
+              onChange={(e) => setClockOut(e.target.value)}
+              required
+            />
           </label>
         </div>
 
-        <label>
-          休憩開始
+        {/* 休憩なし */}
+        <label className={styles.switchRow}>
           <input
-            type="time"
-            value={breakBegin}
-            onChange={(e) => setBreakBegin(e.target.value)}
-            disabled={noBreak}
+            className={styles.checkbox}
+            type="checkbox"
+            checked={noBreak}
+            onChange={(e) => toggleNoBreak(e.target.checked)}
           />
+          <span>休憩なし（--:--）</span>
         </label>
 
-        <label>
-          休憩終了
-          <input
-            type="time"
-            value={breakEnd}
-            onChange={(e) => setBreakEnd(e.target.value)}
-            disabled={noBreak}
-          />
-        </label>
+        {/* 休憩開始・休憩終了 */}
+        <div className={styles.grid}>
+          <label className={styles.field}>
+            <span className={styles.label}>休憩開始</span>
+            <input
+              className={styles.input}
+              type="time"
+              value={breakBegin}
+              onChange={(e) => setBreakBegin(e.target.value)}
+              disabled={noBreak}
+            />
+          </label>
 
-        <label>
-          退勤
-          <input type="time" value={clockOut} onChange={(e) => setClockOut(e.target.value)} required />
-        </label>
+          <label className={styles.field}>
+            <span className={styles.label}>休憩終了</span>
+            <input
+              className={styles.input}
+              type="time"
+              value={breakEnd}
+              onChange={(e) => setBreakEnd(e.target.value)}
+              disabled={noBreak}
+            />
+          </label>
+        </div>
 
-        <div style={{ marginTop: 12 }}>
-          <button type="submit">更新</button>
+        {/* 操作ボタン */}
+        <div className={styles.actions}>
+          <button type="button" className={styles.btnGhost} onClick={() => router.back()}>
+            戻る
+          </button>
+          <div className={styles.actionsRight}>
+            <button type="submit" className={styles.btnPrimary}>
+              更新
+            </button>
+            <button type="button" className={styles.btnDanger} onClick={deleteStamp}>
+              削除
+            </button>
+          </div>
         </div>
       </form>
-
-      <div style={{ marginTop: 12 }}>
-        <button onClick={deleteStamp}>削除</button>
-      </div>
-    </>
+    </div>
   );
 }

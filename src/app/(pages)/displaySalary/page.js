@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import styles from "./displaySalary.module.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { emailToId } from "../../utils/idToEmail/idToEmail";
@@ -16,9 +17,7 @@ export default function DisplaySalary() {
   const [data, setData] = useState(null);
 
   const params = useSearchParams();
-  // 初期はURLのid、認証後に上書き
   const [id, setId] = useState(params.get("id") ?? "");
-
   const router = useRouter();
 
   useEffect(() => {
@@ -27,14 +26,13 @@ export default function DisplaySalary() {
         router.replace("/");
         return;
       }
-      // 文字列化しておく（型揺れ防止）
       setId(String(emailToId(u.email ?? "")));
     });
     return () => unsub();
   }, [router]);
 
   const load = async (y, m) => {
-    if (!id) return; // id 未確定ガード
+    if (!id) return;
     setLoading(true);
     setErr(null);
     try {
@@ -44,7 +42,6 @@ export default function DisplaySalary() {
       if (!res.ok) throw new Error("failed");
       const json = await res.json();
       setData(json);
-      console.log(json); // ← 直近レスポンスを出す
     } catch (e) {
       console.error(e);
       setErr(e?.message ?? "エラーが発生しました");
@@ -54,13 +51,12 @@ export default function DisplaySalary() {
     }
   };
 
-  // 初回だけ自動ロード
   const did = useRef(false);
   useEffect(() => {
     if (!id || did.current) return;
-    did.current = true; // ← 忘れずに
+    did.current = true;
     load(year, month);
-  }, [id, year, month]); // 年月をここに含めるなら did で一度きりにする
+  }, [id, year, month]);
 
   const getSalary = (e) => {
     e.preventDefault();
@@ -68,67 +64,88 @@ export default function DisplaySalary() {
   };
 
   const stmt = data?.employee_payroll_statement ?? null;
-  const gross = stmt?.payment_amount; // 総支給
-  const net = stmt?.net_payment_amount; // 手取り
+  const gross = stmt?.payment_amount;        // 総支給
+  const net = stmt?.net_payment_amount;      // 手取り
   const name = stmt?.employee_name;
 
   return (
-    <div>
-      <h1>給料一覧</h1>
-      <form onSubmit={getSalary}>
-        <input
-          type="month"
-          value={`${year}-${String(month).padStart(2, "0")}`}
-          onChange={(e) => {
-            const [y, m] = e.target.value.split("-");
-            setYear(Number(y));
-            setMonth(Number(m));
-          }}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          表示
-        </button>
-      </form>
+    <div className={styles.page}>
+      <h1 className={styles.title}>給料一覧</h1>
 
-      {loading && <p>読み込み中...</p>}
-      {err && <p>{err}</p>}
+      {/* ツールバー：右に年月＆表示 */}
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarLeft} />
+        <form onSubmit={getSalary} className={styles.filters}>
+          <input
+            className={styles.month}
+            type="month"
+            value={`${year}-${String(month).padStart(2, "0")}`}
+            onChange={(e) => {
+              const [y, m] = e.target.value.split("-");
+              setYear(Number(y));
+              setMonth(Number(m));
+            }}
+            required
+          />
+          <button type="submit" className={styles.btnPrimary} disabled={loading}>
+            表示
+          </button>
+        </form>
+      </div>
 
-      {stmt ? (
-        <div style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-          <div>
-            <strong>氏名</strong>: {name ?? "—"}
-          </div>
-          <div>
-            <strong>年月</strong>: {year}年 {month}月
-          </div>
-          <div>
-            <strong>総支給</strong>: {gross != null ? Number(gross).toLocaleString() : "—"}円
-          </div>
-          <div>
-            <strong>手取り</strong>: {net != null ? Number(net).toLocaleString() : "—"}円
-          </div>
+      {loading && <div className={styles.skel} aria-hidden />}
+
+      {err && (
+        <div className={styles.alert} role="alert">
+          {err}
         </div>
+      )}
+
+      {/* 結果表示 */}
+      {stmt ? (
+        <section className={styles.card} aria-live="polite">
+          <dl className={styles.dl}>
+            <div className={styles.row}>
+              <dt>氏名</dt>
+              <dd>{name ?? "—"}</dd>
+            </div>
+            <div className={styles.row}>
+              <dt>年月</dt>
+              <dd>{year}年 {month}月</dd>
+            </div>
+            <div className={styles.row}>
+              <dt>総支給</dt>
+              <dd className={styles.num}>
+                {gross != null ? Number(gross).toLocaleString() : "—"}円
+              </dd>
+            </div>
+            <div className={styles.row}>
+              <dt>手取り</dt>
+              <dd className={styles.num}>
+                {net != null ? Number(net).toLocaleString() : "—"}円
+              </dd>
+            </div>
+          </dl>
+        </section>
       ) : data ? (
-        <pre
-          style={{
-            background: "#f7f7f7",
-            padding: 12,
-            borderRadius: 8,
-            overflowX: "auto",
-            marginTop: 8,
-          }}
-        >
-          {JSON.stringify(data, null, 2)}
-        </pre>
+        <pre className={styles.raw}>{JSON.stringify(data, null, 2)}</pre>
       ) : null}
 
-      {Number(id) === 3407708 ? 
-        <button onClick={()=>{router.push(`https://p.secure.freee.co.jp/payroll_statements#/1226076/${year}/${month}?page=1&utm_campaign=701Ie000000gW2uIAE_payroll_statements&utm_medium=product&utm_source=payroll`)}}>
+      {/* 管理者だけの導線（IDで判定していた仕様を踏襲） */}
+      {Number(id) === 3407708 ? (
+        <div className={styles.footerActions}>
+          <button
+            className={styles.btnGhost}
+            onClick={() => {
+              router.push(
+                `https://p.secure.freee.co.jp/payroll_statements#/1226076/${year}/${month}?page=1&utm_campaign=701Ie000000gW2uIAE_payroll_statements&utm_medium=product&utm_source=payroll`
+              );
+            }}
+          >
             給与計算をする
-        </button> 
-        : null
-      }
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

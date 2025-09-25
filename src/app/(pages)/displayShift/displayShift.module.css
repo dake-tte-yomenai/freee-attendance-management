@@ -1,121 +1,120 @@
-.wrap {
-  margin: 0 auto;
-  padding: 16px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: #222;
-  background: #fff;
+:root{
+  --c-text:#111827;
+  --c-muted:#6b7280;
+  --c-border:#e5e7eb;
+  --c-surface:#ffffff;
+  --c-primary:#2563eb;       /* blue-600 */
+  --c-primary-700:#1d4ed8;   /* blue-700 */
+  --ring: rgba(37,99,235,.35);
 }
 
-.header {
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  margin-bottom: 8px;
+/* 余白は左右ガターなしの方針に合わせる */
+.page{ padding:20px 0; color:var(--c-text); background:#fff; }
+
+/* ── 操作バー（中央重心） ─────────────────── */
+.toolbar{
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+  padding:0 12px;
+}
+.toolLeft, .toolRight{ display:flex; gap:8px; align-items:center; }
+.toolRight{ justify-content:flex-end; }
+.monthTitle{
+  text-align:center; font-size:1.8rem; font-weight:800; letter-spacing:.02em;
 }
 
-.title {
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.iconBtn{
+  width:36px; height:36px; border-radius:10px;
+  border:1px solid var(--c-border); background:#fff; cursor:pointer;
 }
-
-.navBtn {
-  border: 1px solid #ddd;
-  background: #fafafa;
-  border-radius: 8px;
-  height: 36px;
-  width: 36px;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
+.iconBtn:hover{ background:#f8fafc; }
+.ghostBtn{
+  height:36px; padding:0 12px; border-radius:10px;
+  border:1px solid var(--c-border); background:#fff; cursor:pointer; font-weight:600;
 }
-.navBtn:hover { background: #f0f0f0; }
-
-.controlRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 6px 0 14px;
+.ghostBtn:hover{ background:#f8fafc; }
+.monthInput{
+  height:36px; padding:6px 8px; border-radius:10px; border:1px solid var(--c-border);
 }
+.monthInput:focus{ outline:none; box-shadow:0 0 0 3px var(--ring); border-color:var(--c-primary); }
 
-.todayBtn {
-  border: 1px solid #ccc;
-  background: #fff;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+/* ── メッセージ & スケルトン ─────────────── */
+.message{ color:#b45309; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:12px; margin:0 12px 10px; }
+.skel{
+  height:140px; margin: 0 12px 12px;
+  border-radius:12px; background:linear-gradient(90deg,#eef2ff,#f8fafc,#eef2ff);
+  background-size:200% 100%; animation:shine 1.2s infinite;
 }
-.todayBtn:hover { background: #f7f7f7; }
+@keyframes shine{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-.monthInput {
-  border: 1px solid #ccc;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+/* ── カレンダーグリッド ─────────────────── */
+.calendar{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0,1fr));
+  gap:8px; padding: 0 12px 12px;
 }
 
 /* 曜日ヘッダ */
-.weekday {
-  text-align: center;
-  font-weight: 700;
-  padding: 8px 0;
-  border-bottom: 2px solid #e6e6e6;
-  background: #fcfcfc;
+.weekday{
+  text-align:center; font-weight:800; padding:10px 0;
+  border-bottom:2px solid #eef2ff; background:#f8fafc; border-radius:12px;
 }
-.sun { color: #d33; }
-.sat { color: #247; }
+.sun{ color:#c62828; } .sat{ color:#1565c0; }
 
-/* 日付セル（紙カレンダー風：広め・角丸・薄い枠） */
-.cell {
-  min-height: 200px;
-  border: 1px solid #e6e6e6;
-  border-radius: 10px;
-  padding: 8px;
-  position: relative;
-  background: #fff;
+/* セル（button化してヒット面積UP & キーボード操作対応） */
+.cell{
+  position:relative;
+  min-height:150px;
+  border:1px solid #eef2ff;
+  background:#fff;
+  border-radius:14px;
+  padding:10px;
+  text-align:left;
+  cursor:pointer;
+  display:block;
 }
-.dim {
-  opacity: 0.45; /* 前後月を淡く */
-}
+.cell:hover{ box-shadow:0 2px 12px rgba(2,6,23,.06); border-color:#e0e7ff; }
+.cell:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--ring); }
 
-/* 日付バッジ（右上）。今日なら薄い丸で囲む */
-.dateBadge {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  font-weight: 700;
+/* 月外セルは淡く */
+.dim{ opacity:.45; }
+
+/* 日曜・土曜テキスト */
+.sunTxt{ color:#c62828; }
+.satTxt{ color:#1565c0; }
+
+/* 日付バッジ（右上） */
+.dateBadge{
+  position:absolute; top:8px; right:10px; font-weight:800;
   font-variant-numeric: tabular-nums;
 }
-.today {
-  padding: 2px 6px;
-  border: 2px solid #3b82f6; /* ブルー系の丸印 */
-  border-radius: 999px;
+.today{
+  padding:2px 6px; border:2px solid var(--c-primary); border-radius:999px;
 }
 
-/* 日曜は赤、土曜は青（数字や内容に反映） */
-.sunTxt { color: #c62828; }
-.satTxt { color: #1565c0; }
+/* 勤務ありセルのアクセント（薄い青の縁） */
+.hasShift{ border-color:#c7d2fe; }
 
-/* イベント行の例（必要なら） */
-.event {
-  margin-top: 28px;
-  font-size: 0.85rem;
-  line-height: 1.2;
+/* 勤務時間チップ（左上寄せ） */
+.shiftChip{
+  display:inline-block;
+  margin-top:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px; font-weight:700;
+  background:#eef2ff; color:#1e3a8a; /* indigo系 */
+  max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-.shiftTime {
-  margin-top: 6px;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* レスポンシブ：狭い画面はセル高を下げる */
+@media (max-width: 900px){
+  .calendar{ gap:6px; }
+  .cell{ min-height:120px; }
+}
+@media (max-width: 520px){
+  .monthTitle{ font-size:1.4rem; }
+  .cell{ min-height:100px; }
 }

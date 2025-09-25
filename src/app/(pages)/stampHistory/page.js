@@ -76,61 +76,77 @@ export default function StampHistory(){
         router.push("/liff/bind");
     }
 
-    return(
-        <div>
-            <h1>打刻履歴</h1>
-            <form onSubmit={getStampHistory}>
-               <input
-                    type="month"
-                    value={`${year}-${String(month).padStart(2, "0")}`}
-                    onChange={(e) => {
-                        const [y, m] = e.target.value.split("-");
-                        setYear(Number(y));
-                        setMonth(Number(m));
-                    }}
-                    required
-                />
-                <button type="submit">表示</button>
-            </form>
-            <br/>
-            <button onClick={toLiffBind}>LINE連携</button>
-            {loading && <p>読み込み中...</p>}
-            {err && <p>{err}</p>}
-            {rows.length > 0 && (
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>状態</th>
-                            <th>日付</th>
-                            <th>出勤</th>
-                            <th>休憩開始</th>
-                            <th>休憩終了</th>
-                            <th>退勤</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rows.map((r) => {
-                            const complete = r.clock_in !== "-" && r.clock_out !== "-";
-                            return (
-                            <tr key={r.date}>
-                                <td>
-                                    <span className={`${styles.status} ${complete ? styles.ok : styles.pending}`}>
-                                        {complete ? "OK" : "未完"}
-                                    </span>
-                                </td>
-                                <td>{r.date}</td>
-                                <td>{r.clock_in}</td>
-                                <td>{r.break_begin}</td>
-                                <td>{r.break_end}</td>
-                                <td>{r.clock_out}</td>
-                                <td><p onClick={()=>toEditPage(r)}>編集</p></td>
-                            </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            )} 
+    return (
+    <div className={styles.page}>
+        <h1 className={styles.title}>打刻履歴</h1>
+
+        {/* ツールバー：左にLINE、右に年月＋表示 */}
+        <div className={styles.toolbar}>
+        <button type="button" onClick={toLiffBind} className={styles.btnGhost}>
+            LINE連携
+        </button>
+
+        <form onSubmit={getStampHistory} className={styles.filters}>
+            <input
+            className={styles.month}
+            type="month"
+            value={`${year}-${String(month).padStart(2, "0")}`}
+            onChange={(e) => {
+                const [y, m] = e.target.value.split("-");
+                setYear(Number(y));
+                setMonth(Number(m));
+            }}
+            required
+            />
+            <button type="submit" className={styles.btnPrimary}>表示</button>
+        </form>
         </div>
-    )
+
+        {loading && <div className={styles.skel} aria-hidden />}
+
+        {err && <div className={styles.alert} role="alert">{err}</div>}
+
+        {rows.length > 0 && (
+        <div className={styles.tableWrap}>
+            <table className={styles.table}>
+            <thead>
+                <tr>
+                <th>状態</th>
+                <th>日付</th>
+                <th>出勤</th>
+                <th>休憩開始</th>
+                <th>休憩終了</th>
+                <th>退勤</th>
+                <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows.map((r) => {
+                const complete = r.clock_in !== "-" && r.clock_out !== "-";
+                return (
+                    <tr key={r.date}>
+                    <td>
+                        <span className={`${styles.status} ${complete ? styles.ok : styles.pending}`}>
+                        {complete ? "OK" : "未完"}
+                        </span>
+                    </td>
+                    <td className={styles.date}>{r.date}</td>
+                    <td>{r.clock_in}</td>
+                    <td>{r.break_begin}</td>
+                    <td>{r.break_end}</td>
+                    <td>{r.clock_out}</td>
+                    <td>
+                        <button className={styles.linkBtn} onClick={() => toEditPage(r)}>
+                        編集
+                        </button>
+                    </td>
+                    </tr>
+                );
+                })}
+            </tbody>
+            </table>
+        </div>
+        )}
+    </div>
+    );
 }
