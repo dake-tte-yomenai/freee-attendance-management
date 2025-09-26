@@ -262,18 +262,20 @@ export default function DetailShift() {
       <h1 className={styles.title}>{title}</h1>
       {msg && <p className={styles.alert} role="status" aria-live="polite">{msg}</p>}
 
-      {/* 名前チップ（横スクロール可） */}
-      <div className={styles.nameBar}>
-        {empData.map((emp, idx) => (
-          <button
-            key={emp.id}
-            onClick={() => onPickLane(idx)}
-            className={`${styles.chip} ${editingLane === idx ? styles.chipActive : ""}`}
-          >
-            {emp.display_name}
-          </button>
-        ))}
-      </div>
+      {String(id)===process.env.NEXT_PUBLIC_OWNER_ID ?
+        <div className={styles.nameBar}>
+          {empData.map((emp, idx) => (
+            <button
+              key={emp.id}
+              onClick={() => onPickLane(idx)}
+              className={`${styles.chip} ${editingLane === idx ? styles.chipActive : ""}`}
+            >
+              {emp.display_name}
+            </button>
+          ))}
+        </div>
+      :null}
+      
 
       {/* 編集カード */}
       {editingLane != null && (
